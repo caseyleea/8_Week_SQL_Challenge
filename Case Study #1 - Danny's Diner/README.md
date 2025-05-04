@@ -36,8 +36,8 @@ ___
 **2. How many days has each customer visited the restaurant?**
 ```sql
 SELECT
-	customer_id,
-    COUNT(DISTINCT order_date) AS days_visited
+  customer_id,
+  COUNT(DISTINCT order_date) AS days_visited
 FROM dannys_diner.sales
 GROUP BY customer_id
 ORDER BY days_visited DESC; 
@@ -85,8 +85,8 @@ ___
 **4. What is the most purchased item on the menu and how many times was it purchased by all customers?**
 ```sql
 SELECT
-	me.product_name,
-	COUNT(sa.product_id) as times_purchased
+  me.product_name,
+  COUNT(sa.product_id) as times_purchased
 FROM dannys_diner.sales sa
 LEFT JOIN dannys_diner.menu me
   ON sa.product_id = me.product_id
@@ -100,3 +100,78 @@ LIMIT 1;
 | ramen  | 8 |
 
 *Answer:*
+___
+**5. Which item was the most popular for each customer?**
+```sql
+WITH dish_rank AS (
+SELECT
+  sa.customer_id,
+  me.product_name,
+  DENSE_RANK () OVER(PARTITION BY sa.customer_id ORDER BY COUNT(sa.product_id)) AS ranking
+FROM dannys_diner.sales sa
+JOIN dannys_diner.menu me
+  ON sa.product_id = me.product_id
+GROUP BY sa.customer_id, me.product_name
+ORDER BY sa.customer_id)
+
+SELECT
+  customer_id,
+  product_name
+FROM dish_rank
+WHERE ranking = 1; 
+```
+*Output:*
+| customer_id  | product_name |
+| ------------- | ------------- |
+| A | sushi |
+| B  | ramen |
+| B  | curry |
+| B | sushi |
+| C | ramen |
+
+*Answer:*
+___
+**6. Which item was purchased first by the customer after they became a member?**
+```sql
+SELECT
+  sa.customer_id, 
+  mem.join_date,
+  sa.order_date,
+  me.product_name,
+  DENSE_RANK() OVER (PARTITION BY sa.customer_id ORDER BY sa.order_date) AS rank
+FROM dannys_diner.members mem
+JOIN dannys_diner.sales sa
+  ON sa.customer_id = mem.customer_id
+JOIN dannys_diner.menu me
+  ON sa.product_id = me.product_id
+WHERE sa.order_date > mem.join_date)
+
+SELECT
+  customer_id, 
+  join_date,
+  order_date,
+  product_name
+FROM member_dish
+WHERE rank = 1; 
+```
+*Output:*
+| customer_id  | join_date |order_date |product_name |
+| ------------- | ------------- |------------- |------------- |
+| A | 2021-01-07T00:00:00.000Z |2021-01-10T00:00:00.000Z |ramen |
+| B  | ramen |2021-01-09T00:00:00.000Z |2021-01-11T00:00:00.000Z |
+
+*Answer:*
+
+___
+**7. Which item was purchased just before the customer became a member?**
+```sql
+
+```
+*Output:*
+| customer_id  | join_date |order_date |product_name |
+| ------------- | ------------- |------------- |------------- |
+| A | 2021-01-07T00:00:00.000Z |2021-01-10T00:00:00.000Z |ramen |
+| B  | ramen |2021-01-09T00:00:00.000Z |2021-01-11T00:00:00.000Z |
+
+*Answer:*
+
