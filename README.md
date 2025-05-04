@@ -1,4 +1,4 @@
-# 8 Week SQL Challenges
+# 8 Week SQL Challenge
 
 I decided to complete Data with Danny's 8 Week SQL Challenge. Not only did it test my knowledge, but it showcases my SQL skills and ability to problem solve.  
 
