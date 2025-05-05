@@ -24,14 +24,13 @@ JOIN menu me
 GROUP BY sa.customer_id
 ORDER BY total_spent DESC;
 ```
-*Output:*
+*Answer:*
 | customer_id  | total_spent |
 | ------------- | ------------- |
 | A  | 76 |
 | B | 74  |
 | C | 36 |
 
-*Answer:*
 * Customer A spent $76.
 * Customer B spent $74.
 * Customer C spent $36.
@@ -45,14 +44,13 @@ FROM dannys_diner.sales
 GROUP BY customer_id
 ORDER BY days_visited DESC; 
 ```
-*Output:*
+*Answer:*
 | customer_id  | days_visited |
 | ------------- | ------------- |
 | B  | 6 |
 | A | 4  |
 | C | 2 |
 
-*Answer:*
 * Customer A visited the restaurant 4 times.
 * Customer B visited the restaurant 6 times.
 * Customer C visited the restaurant 2 times.
@@ -78,7 +76,7 @@ FROM order_rank
 WHERE order_number = 1
 GROUP BY customer_id, product_name; 
 ```
-*Output:*
+*Answer:*
 | customer_id  | product_name |purchased |
 | ------------- | ------------- |------------- |
 | A  | curry |1 |
@@ -86,7 +84,6 @@ GROUP BY customer_id, product_name;
 | B | curry |1 |
 | C | ramen |2 |
 
-*Answer:*
 * Customer A purchased curry and sushi.
 * Customer B purchased curry.
 * Customer C purchased ramen.
@@ -103,12 +100,11 @@ GROUP BY me.product_name
 ORDER BY times_purchased DESC
 LIMIT 1;
 ```
-*Output:*
+*Answer:*
 | product_name  | times_purchased |
 | ------------- | ------------- |
 | ramen  | 8 |
 
-*Answer:*
 * Ramen is the most sold item on the menu. It was purchased 8 times.
 ___
 **5. Which item was the most popular for each customer?**
@@ -130,7 +126,7 @@ SELECT
 FROM dish_rank
 WHERE ranking = 1; 
 ```
-*Output:*
+*Answer:* CHECK!
 | customer_id  | product_name |
 | ------------- | ------------- |
 | A | sushi |
@@ -139,7 +135,6 @@ WHERE ranking = 1;
 | B | sushi |
 | C | ramen |
 
-*Answer:* CHECK!
 * Sushi is the most popular for Customer A.
 * Ramen, curry, and sushi are popular for Customer B.
 * Ramen is the most popular for Customer C.
@@ -167,13 +162,12 @@ SELECT
 FROM member_dish
 WHERE rank = 1; 
 ```
-*Output:*
+*Answer:*
 | customer_id  | join_date |order_date |product_name |
 | ------------- | ------------- |------------- |------------- |
 | A | 2021-01-07T00:00:00.000Z |2021-01-10T00:00:00.000Z |ramen |
 | B  | 2021-01-09T00:00:00.000Z |2021-01-11T00:00:00.000Z |sushi |
 
-*Answer:*
 * Customer A's first purchase after becoming a member was ramen.
 * Customer B's first purchase after becoming a member was sushi.
 ___
@@ -201,14 +195,13 @@ SELECT
 FROM member_purchase
 WHERE rank = 1;
 ```
-*Output:*
+*Answer:* CHECK!
 | customer_id  | join_date |order_date |product_name |
 | ------------- | ------------- |------------- |------------- |
 | A | 2021-01-07T00:00:00.000Z |2021-01-01T00:00:00.000Z |sushi |
 | A  | 2021-01-07T00:00:00.000Z |2021-01-01T00:00:00.000Z |curry |
 | B  | 2021-01-09T00:00:00.000Z|2021-01-04T00:00:00.000Z |sushi |
 
-*Answer:* CHECK!
 * Customer A ordered sushi and curry just before becoming a member.
 * Customer B ordered sushi just before becoming a member.
 ___
@@ -227,13 +220,12 @@ JOIN dannys_diner.menu me
 WHERE sa.order_date < mem.join_date
 GROUP BY sa.customer_id, mem.join_date;
 ```
-*Output:*
+*Answer:*
 | customer_id  | join_date |total_items |total_spent |
 | ------------- | ------------- |------------- |------------- |
 | A | 2021-01-07T00:00:00.000Z |2 |25 |
 | B | 2021-01-09T00:00:00.000Z |3 |40|
 
-*Answer:*
 * Customer A ordered 2 items and spent $25 before becoming a member.
 * Customer B ordered 3 items and spent $40 before becoming a member.
 ___
@@ -264,14 +256,13 @@ CASE
 FROM purchase_count) AS points_calc
 GROUP BY customer_id; 
 ```
-*Output:*
+*Answer:*
 | customer_id  | total_points |
 | ------------- | ------------- |
 | A | 860|
 | B | 940|
 | C | 360|
 
-*Answer:*
 * Customer A has 860 points.
 * Customer B has 940 points.
 * Customer C has 360 points.
@@ -303,14 +294,13 @@ CASE
 FROM purchase_count) AS points_calc
 GROUP BY customer_id; 
 ```
-*Output:*
+*Answer:* CHECK! 
 | customer_id  | total_points |
 | ------------- | ------------- |
 | A | 860|
 | B | 940|
 | C | 360|
 
-*Answer:* CHECK! 
 * Customer A has 860 points.
 * Customer B has 940 points.
 * Customer C has 360 points.
