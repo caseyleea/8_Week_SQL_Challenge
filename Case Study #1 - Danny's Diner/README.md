@@ -270,38 +270,63 @@ GROUP BY customer_id;
 ___
 **10. The first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?**
 ```sql
-WITH purchase_count AS (
+WITH week_after AS (
 SELECT
-  sa.customer_id, 
-  me.product_name,
-  me.price,
-  COUNT(sa.product_id) AS purchased
-FROM dannys_diner.sales sa
+	sa.customer_id, 
+    (SUM(me.price)*10)*2 AS points
+FROM dannys_diner.members mem
+JOIN dannys_diner.sales sa
+ON sa.customer_id = mem.customer_id
 JOIN dannys_diner.menu me
-  ON sa.product_id = me.product_id
-GROUP BY sa.customer_id, me.product_name, me.price
-ORDER BY sa.customer_id, purchased)
+ON sa.product_id = me.product_id
+WHERE sa.order_date >= mem.join_date AND sa.order_date <= mem.join_date+6
+GROUP BY sa.customer_id),
 
-SELECT 
-  customer_id,
-  SUM(points) AS total_points
+non_member AS (
+SELECT
+	sa.customer_id,
+    me.price,
+    me.product_name,
+    COUNT(product_name) AS purchased
+FROM dannys_diner.members mem
+JOIN dannys_diner.sales sa
+ON sa.customer_id = mem.customer_id
+JOIN dannys_diner.menu me
+ON sa.product_id = me.product_id
+WHERE sa.order_date < mem.join_date OR sa.order_date > mem.join_date+6 AND sa.order_date < '2021-01-31'
+GROUP BY sa.customer_id, me.price, me.product_name),
+
+non_member_points AS (
+SELECT
+	customer_id, 
+    product_name, 
+    CASE
+    	WHEN product_name = 'sushi' THEN ((purchased*price)*10)*2 
+        ELSE (purchased*price)*10 END AS points
+FROM non_member)
+
+
+SELECT
+	customer_id, 
+    SUM(points) AS Jan_points
 FROM(
 SELECT
-  customer_id, 
-  product_name,
-CASE 
-  WHEN product_name = 'sushi' THEN ((purchased*price)*10)*2
-  ELSE (purchased*price)*10 END AS points
-FROM purchase_count) AS points_calc
+	customer_id, 
+    points
+FROM non_member_points
+UNION ALL
+SELECT 
+	customer_id, 
+    points 
+FROM week_after) AS all_points
 GROUP BY customer_id; 
 ```
-*Answer:* CHECK! 
-| customer_id  | total_points |
+*Answer:*
+| customer_id  | jan_points |
 | ------------- | ------------- |
-| A | 860|
-| B | 940|
-| C | 360|
+| A | 1370|
+| B | 820|
 
-* Customer A has 860 points.
-* Customer B has 940 points.
-* Customer C has 360 points.
+* Customer A has 1370 points.
+* Customer B has 820 points.
+
