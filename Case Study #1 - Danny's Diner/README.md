@@ -113,31 +113,32 @@ WITH dish_rank AS (
 SELECT
   sa.customer_id,
   me.product_name,
-  DENSE_RANK () OVER(PARTITION BY sa.customer_id ORDER BY COUNT(sa.product_id)) AS ranking
-FROM dannys_diner.sales sa
-JOIN dannys_diner.menu me
-  ON sa.product_id = me.product_id
+  COUNT(me.product_id) AS times_ordered,
+  DENSE_RANK () OVER(PARTITION BY sa.customer_id ORDER BY COUNT(sa.customer_id) DESC) AS ranking
+FROM dannys_diner.menu me
+JOIN dannys_diner.sales sa
+  ON me.product_id = sa.product_id
 GROUP BY sa.customer_id, me.product_name
 ORDER BY sa.customer_id)
 
 SELECT
   customer_id,
-  product_name
+  product_name, 
+  times_ordered
 FROM dish_rank
 WHERE ranking = 1; 
 ```
-*Answer:* CHECK!
-| customer_id  | product_name |
-| ------------- | ------------- |
-| A | sushi |
-| B  | ramen |
-| B  | curry |
-| B | sushi |
-| C | ramen |
+*Answer:* 
+| customer_id  | product_name | times_ordered |
+| ------------- | ------------- |------------- |
+| A | ramen | 3 |
+| B  | ramen | 2|
+| B  | curry | 2|
+| B | sushi | 2|
+| C | ramen | 3|
 
-* Sushi is the most popular for Customer A.
+* Ramen is the most popular dish for Customer A and C. 
 * Ramen, curry, and sushi are popular for Customer B.
-* Ramen is the most popular for Customer C.
 ___
 **6. Which item was purchased first by the customer after they became a member?**
 ```sql
@@ -195,7 +196,7 @@ SELECT
 FROM member_purchase
 WHERE rank = 1;
 ```
-*Answer:* CHECK!
+*Answer:*
 | customer_id  | join_date |order_date |product_name |
 | ------------- | ------------- |------------- |------------- |
 | A | 2021-01-07T00:00:00.000Z |2021-01-01T00:00:00.000Z |sushi |
@@ -267,7 +268,7 @@ GROUP BY customer_id;
 * Customer B has 940 points.
 * Customer C has 360 points.
 ___
-**10. n the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?**
+**10. The first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?**
 ```sql
 WITH purchase_count AS (
 SELECT
